@@ -1,9 +1,56 @@
 <html>
     <head>
         <title>VS Code Rocks!</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="/static/style.css">
+        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.1/dist/confetti.browser.min.js"></script>
+
     </head>
     <body>
-        <h1>VS Code can do that?</h1>
-        <p>Yes it can!</p>
+        <div id="contenedor">
+            <!-- <canvas  id="canvas"></canvas> -->
+            <h1 id="resultado"></h1>
+            <div id="contenedor-boton">
+                <button class="boton-jugar" data-eleccion="piedra">֎</button>
+                <button class="boton-jugar" data-eleccion="papel">☐</button>
+                <button class="boton-jugar" data-eleccion="tijera"> ✂ </button>
+            </div>    
+            <h2 id="resultado-juego"> 🜲 </h2>
+        </div>
+        
+
+        <script>
+            var myCanvas = document.createElement('canvas');
+            myCanvas.className="mi-canvas";
+            document.body.appendChild(myCanvas);
+
+            var myConfetti = confetti.create(myCanvas, {
+            resize: true,
+            useWorker: true
+            });
+            myConfetti({
+            particleCount: 100,
+            spread: 160
+            // any other options from the global
+            // confetti function
+            });
+          $(document).ready(function(){
+            $('.boton-jugar').click(function(){
+                var eleccion = $(this).attr('data-eleccion');
+                $.ajax({
+                    url: '/jugar/' + eleccion,
+                    type: 'get',
+                    success: function(data) {
+                        $('#resultado').text('Tu elección: ' + data.eleccion + ' vs ' + data.resultado);
+                       
+                        $('#resultado-juego').text(data.ganador);
+                        if (data.ganador === 'Ganaste ✔') {
+                            myConfetti();
+                        }
+                    }
+                });
+            });
+        });
+        </script>
     </body>
 </html>
